@@ -462,12 +462,9 @@ const WINDOW_SAMPLES    = 144;
 
 function caffeineAtContinuous(tHours) {
   return entries.reduce((sum, e) => {
-    const ti0 = timeToHours(e.time);
-    for (const ti of [ti0 - 24, ti0, ti0 + 24]) {
-      if (tHours < ti) continue;
-      sum += e.mg * Math.pow(2, -(tHours - ti) / HALF_LIFE);
-    }
-    return sum;
+    const ti = timeToHours(e.time);
+    if (tHours < ti) return sum;
+    return sum + e.mg * Math.pow(2, -(tHours - ti) / HALF_LIFE);
   }, 0);
 }
 
