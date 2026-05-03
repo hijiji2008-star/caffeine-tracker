@@ -456,8 +456,9 @@ function saveToStorage() {
   localStorage.setItem('caffeine_log', JSON.stringify({ date: today, entries, nextId }));
 }
 
-const HALF_LIFE      = 5.5;
-const WINDOW_SAMPLES = 144;
+const HALF_LIFE         = 5.5;
+const WINDOW_HALF_HOURS = 12;
+const WINDOW_SAMPLES    = 144;
 
 function caffeineAtContinuous(tHours) {
   return entries.reduce((sum, e) => {
@@ -470,10 +471,13 @@ function caffeineAtContinuous(tHours) {
   }, 0);
 }
 
-function computeWindowPoints() {
+function computeWindowPoints(nowH) {
+  const start = nowH - WINDOW_HALF_HOURS;
+  const end   = nowH + WINDOW_HALF_HOURS;
   const pts = [];
   for (let i = 0; i <= WINDOW_SAMPLES; i++) {
-    pts.push(caffeineAtContinuous((i / WINDOW_SAMPLES) * 24));
+    const t = start + (i / WINDOW_SAMPLES) * (end - start);
+    pts.push(caffeineAtContinuous(t));
   }
   return pts;
 }
@@ -487,14 +491,21 @@ function find50mgTime(nowH) {
   return null;
 }
 
-function renderWindowXLabels() {
+function renderWindowXLabels(nowH) {
   const el = document.getElementById('xLabels');
   if (!el) return;
   while (el.firstChild) el.removeChild(el.firstChild);
-  [0, 6, 12, 18, 24].forEach(h => {
+  const ticks = [
+    nowH - WINDOW_HALF_HOURS,
+    nowH - WINDOW_HALF_HOURS / 2,
+    nowH,
+    nowH + WINDOW_HALF_HOURS / 2,
+    nowH + WINDOW_HALF_HOURS,
+  ];
+  ticks.forEach(t => {
     const span = document.createElement('span');
     span.className   = 'x-label';
-    span.textContent = h === 24 ? '24:00' : String(h).padStart(2,'0') + ':00';
+    span.textContent = hoursToHHMM(t);
     el.appendChild(span);
   });
 }
@@ -502,7 +513,7 @@ function renderWindowXLabels() {
 function updateGraph() {
   const now  = new Date();
   const nowH = now.getHours() + now.getMinutes() / 60;
-  const pts    = computeWindowPoints();
+  const pts    = computeWindowPoints(nowH);
   const maxVal = Math.max(100, ...pts);
   const W = 500, H = 170, PAD_L = 12, PAD_R = 12, PAD_T = 10, PAD_B = 18;
   const gW = W - PAD_L - PAD_R;
@@ -530,20 +541,17 @@ function updateGraph() {
 
   document.getElementById('badgeCurrent').textContent = Math.round(caffeineAtContinuous(nowH)) + 'mg';
 
-  const nowX = PAD_L + (nowH / 24) * gW;
   const nowLine = document.getElementById('nowLine');
   if (nowLine) {
-    nowLine.setAttribute('x1', nowX);
-    nowLine.setAttribute('x2', nowX);
+    const x = PAD_L + gW / 2;
+    nowLine.setAttribute('x1', x);
+    nowLine.setAttribute('x2', x);
     nowLine.setAttribute('y1', PAD_T);
     nowLine.setAttribute('y2', PAD_T + gH);
   }
 
   const centerLabel = document.getElementById('centerTimeLabel');
-  if (centerLabel) {
-    centerLabel.textContent = hoursToHHMM(nowH);
-    centerLabel.style.left = ((nowX / W) * 100).toFixed(1) + '%';
-  }
+  if (centerLabel) centerLabel.textContent = hoursToHHMM(nowH);
 
   const line50 = document.getElementById('line50mg');
   if (line50) {
@@ -559,7 +567,7 @@ function updateGraph() {
     }
   }
 
-  renderWindowXLabels();
+  renderWindowXLabels(nowH);
 
   const badge50mg    = document.getElementById('badge50mg');
   const badge50mgVal = document.getElementById('badge50mgVal');
