@@ -541,6 +541,15 @@ function renderWindowXLabels(nowH, PAD_L, gW) {
 function updateGraph() {
   const now  = new Date();
   const nowH = now.getHours() + now.getMinutes() / 60;
+
+  const before = entries.length;
+  entries = entries.filter(e => {
+    const ti = timeToHours(e.time);
+    if (nowH < ti) return true;
+    return e.mg * Math.pow(2, -(nowH - ti) / HALF_LIFE) >= 1;
+  });
+  if (entries.length !== before) { renderLog(); saveToStorage(); }
+
   const pts    = computeWindowPoints(nowH);
   const maxVal = Math.max(100, ...pts);
   const W = 500, H = 170, PAD_L = 12, PAD_R = 12, PAD_T = 22, PAD_B = 18;
