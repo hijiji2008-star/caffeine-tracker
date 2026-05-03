@@ -91,7 +91,7 @@
 
     select { flex: 1; min-width: 160px; }
 
-    input[type="time"] { flex-shrink: 0; }
+    #timePick { flex: 0 0 auto; min-width: 0; width: 90px; }
 
     button#addBtn {
       background: linear-gradient(135deg, #4f46e5, #0ea5e9);
@@ -228,7 +228,7 @@
     <div class="section-label" id="drinkLogLabel">DRINK LOG</div>
     <div class="input-row">
       <select id="drinkSel"></select>
-      <input type="time" id="timePick">
+      <select id="timePick"></select>
       <button id="addBtn">+ 追加</button>
     </div>
     <div id="logList"></div>
@@ -403,11 +403,21 @@ document.getElementById('langBtn').addEventListener('click', () => {
   applyLang(currentLang);
 });
 
-(function setDefaultTime() {
+(function buildTimePick() {
+  const sel = document.getElementById('timePick');
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 5) {
+      const val = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = val;
+      sel.appendChild(opt);
+    }
+  }
   const now = new Date();
-  const hh  = String(now.getHours()).padStart(2, '0');
-  const mm  = String(now.getMinutes()).padStart(2, '0');
-  document.getElementById('timePick').value = hh + ':' + mm;
+  const rounded = Math.round((now.getHours() * 60 + now.getMinutes()) / 5) * 5;
+  const h = Math.floor(rounded / 60) % 24;
+  const m = rounded % 60;
+  sel.value = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
 })();
 
 let entries = [];
