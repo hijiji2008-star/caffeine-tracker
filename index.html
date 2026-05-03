@@ -123,6 +123,20 @@
       font-size: 13px;
     }
 
+    .entry-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      font-size: 10px;
+      flex-shrink: 0;
+      margin-right: 8px;
+    }
     .log-mg  { color: #8b949e; margin-right: 10px; }
 
     .del-btn {
@@ -240,6 +254,7 @@
               stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1"
               stroke-dasharray="4 5" visibility="hidden"/>
         <g id="yLabelGroup"></g>
+        <g id="entryMarkers"></g>
         <text id="label50mg" x="6" y="0"
               fill="#484f58" font-size="9" text-anchor="start"
               visibility="hidden">50mg</text>
@@ -619,6 +634,35 @@ function updateGraph() {
 
   renderWindowXLabels(nowH, PAD_L, gW);
 
+  const entryMarkers = document.getElementById('entryMarkers');
+  while (entryMarkers.firstChild) entryMarkers.removeChild(entryMarkers.firstChild);
+  const NS_M = 'http://www.w3.org/2000/svg';
+  entries.forEach((e, idx) => {
+    const ti = timeToHours(e.time);
+    if (ti < winStart || ti > winEnd) return;
+    const mx = PAD_L + ((ti - winStart) / (2 * WINDOW_HALF_HOURS)) * gW;
+    const my = toY(caffeineAtContinuous(ti)) - 12;
+    const g = document.createElementNS(NS_M, 'g');
+    const circle = document.createElementNS(NS_M, 'circle');
+    circle.setAttribute('cx', mx.toFixed(1));
+    circle.setAttribute('cy', my.toFixed(1));
+    circle.setAttribute('r', '8');
+    circle.setAttribute('fill', '#161b22');
+    circle.setAttribute('stroke', '#30363d');
+    circle.setAttribute('stroke-width', '1');
+    const txt = document.createElementNS(NS_M, 'text');
+    txt.setAttribute('x', mx.toFixed(1));
+    txt.setAttribute('y', my.toFixed(1));
+    txt.setAttribute('fill', '#8b949e');
+    txt.setAttribute('font-size', '8');
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('dominant-baseline', 'central');
+    txt.textContent = String(idx + 1);
+    g.appendChild(circle);
+    g.appendChild(txt);
+    entryMarkers.appendChild(g);
+  });
+
   const badge50mg    = document.getElementById('badge50mg');
   const badge50mgVal = document.getElementById('badge50mgVal');
   if (badge50mg && badge50mgVal) {
@@ -656,6 +700,7 @@ function deleteEntry(id) {
   saveToStorage();
 }
 
+
 function renderLog() {
   const list = document.getElementById('logList');
   while (list.firstChild) list.removeChild(list.firstChild);
@@ -668,11 +713,16 @@ function renderLog() {
     return;
   }
 
-  entries.forEach(e => {
+  entries.forEach((e, idx) => {
     const item = document.createElement('div');
     item.className = 'log-item';
 
+    const numSpan = document.createElement('span');
+    numSpan.className   = 'entry-num';
+    numSpan.textContent = String(idx + 1);
+
     const info = document.createElement('span');
+    info.style.flex = '1';
     const drinkLabel = DRINKS.find(d => d.id === e.drink)?.label ?? e.drink;
     info.textContent = e.time + '  ' + drinkLabel;
 
@@ -689,6 +739,7 @@ function renderLog() {
 
     right.appendChild(mgSpan);
     right.appendChild(del);
+    item.appendChild(numSpan);
     item.appendChild(info);
     item.appendChild(right);
     list.appendChild(item);
