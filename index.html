@@ -227,7 +227,6 @@
   <div class="card">
     <div class="section-label" id="graphLabel">CAFFEINE LEVEL (mg)</div>
     <div id="graphWrap">
-      <div class="y-labels" id="yLabels"></div>
       <svg id="graphSvg" viewBox="0 0 500 170" preserveAspectRatio="none">
         <defs>
           <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
@@ -240,7 +239,8 @@
         <line id="line50mg" x1="12" y1="80" x2="488" y2="80"
               stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1"
               stroke-dasharray="4 5" visibility="hidden"/>
-        <text id="label50mg" x="14" y="0"
+        <g id="yLabelGroup"></g>
+        <text id="label50mg" x="6" y="0"
               fill="#484f58" font-size="9" text-anchor="start"
               visibility="hidden">50mg</text>
         <line id="drop50Line" x1="0" y1="0" x2="0" y2="0"
@@ -543,13 +543,22 @@ function updateGraph() {
   document.getElementById('graphLine').setAttribute('d', lineD);
   document.getElementById('graphFill').setAttribute('d', fillD);
 
-  const yLabels = document.getElementById('yLabels');
-  while (yLabels.firstChild) yLabels.removeChild(yLabels.firstChild);
-  [maxVal, Math.round(maxVal / 2), 0].forEach(v => {
-    const span = document.createElement('span');
-    span.className   = 'y-label';
-    span.textContent = Math.round(v) + 'mg';
-    yLabels.appendChild(span);
+  const yLabelGroup = document.getElementById('yLabelGroup');
+  while (yLabelGroup.firstChild) yLabelGroup.removeChild(yLabelGroup.firstChild);
+  const NS_SVG = 'http://www.w3.org/2000/svg';
+  [
+    { val: maxVal,              y: toY(maxVal) + 9        },
+    { val: Math.round(maxVal / 2), y: toY(maxVal / 2) + 4 },
+    { val: 0,                   y: toY(0) - 2             },
+  ].forEach(({ val, y }) => {
+    const txt = document.createElementNS(NS_SVG, 'text');
+    txt.setAttribute('x', '6');
+    txt.setAttribute('y', y.toFixed(1));
+    txt.setAttribute('fill', '#484f58');
+    txt.setAttribute('font-size', '9');
+    txt.setAttribute('text-anchor', 'start');
+    txt.textContent = Math.round(val) + 'mg';
+    yLabelGroup.appendChild(txt);
   });
 
   document.getElementById('badgeCurrent').textContent = Math.round(caffeineAtContinuous(nowH)) + 'mg';
