@@ -240,6 +240,12 @@
         <line id="line50mg" x1="12" y1="80" x2="488" y2="80"
               stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1"
               stroke-dasharray="4 5" visibility="hidden"/>
+        <line id="drop50Line" x1="0" y1="0" x2="0" y2="0"
+              stroke="#f59e0b" stroke-opacity="0.5" stroke-width="1"
+              visibility="hidden"/>
+        <text id="drop50Text" x="0" y="0"
+              fill="#f59e0b" font-size="9" text-anchor="middle"
+              visibility="hidden"></text>
         <line id="nowLine" x1="250" y1="10" x2="250" y2="152"
               stroke="#e6edf3" stroke-opacity="0.22" stroke-width="1"/>
       </svg>
@@ -562,6 +568,28 @@ function updateGraph() {
     } else {
       line50.setAttribute('visibility', 'hidden');
     }
+  }
+
+  const drop50Line = document.getElementById('drop50Line');
+  const drop50Text = document.getElementById('drop50Text');
+  const dropTime   = find50mgTime(nowH);
+  const winStart   = nowH - WINDOW_HALF_HOURS;
+  const winEnd     = nowH + WINDOW_HALF_HOURS;
+  if (drop50Line && drop50Text && dropTime !== null && dropTime >= winStart && dropTime <= winEnd) {
+    const xDrop    = PAD_L + ((dropTime - winStart) / (2 * WINDOW_HALF_HOURS)) * gW;
+    const yInter   = toY(50);
+    drop50Line.setAttribute('x1', xDrop.toFixed(1));
+    drop50Line.setAttribute('x2', xDrop.toFixed(1));
+    drop50Line.setAttribute('y1', yInter.toFixed(1));
+    drop50Line.setAttribute('y2', (PAD_T + gH).toFixed(1));
+    drop50Line.setAttribute('visibility', 'visible');
+    drop50Text.setAttribute('x', xDrop.toFixed(1));
+    drop50Text.setAttribute('y', (PAD_T + gH + 11).toFixed(1));
+    drop50Text.textContent = hoursToHHMM(dropTime);
+    drop50Text.setAttribute('visibility', 'visible');
+  } else {
+    if (drop50Line) drop50Line.setAttribute('visibility', 'hidden');
+    if (drop50Text) drop50Text.setAttribute('visibility', 'hidden');
   }
 
   renderWindowXLabels(nowH);
