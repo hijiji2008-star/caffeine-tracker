@@ -641,7 +641,7 @@ function updateGraph() {
     const ti = timeToHours(e.time);
     if (ti < winStart || ti > winEnd) return;
     const mx = PAD_L + ((ti - winStart) / (2 * WINDOW_HALF_HOURS)) * gW;
-    const my = toY(caffeineAtContinuous(ti)) - 12;
+    const my = Math.max(PAD_T + 9, toY(caffeineAtContinuous(ti)) - 12);
     const g = document.createElementNS(NS_M, 'g');
     const circle = document.createElementNS(NS_M, 'circle');
     circle.setAttribute('cx', mx.toFixed(1));
