@@ -321,7 +321,7 @@ const TEXTS = {
     drinkLogLabel:     'DRINK LOG',
     addBtn:            '+ Add',
     logEmpty:          'No entries yet',
-    nowPrefix:         'Now',
+    nowPrefix:         'Now ',
     graphLabel:        'CAFFEINE LEVEL (mg)',
     badgeCurrentLabel: 'Now ',
     badge50mgLabel:    'Drops to 50mg ',
@@ -426,6 +426,7 @@ function applyLang(lang) {
   document.getElementById('aboutText').textContent        = t.aboutText;
   buildSelect();
   renderLog();
+  updateGraph();
 }
 
 document.getElementById('langBtn').addEventListener('click', () => {
