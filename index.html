@@ -240,6 +240,9 @@
         <line id="line50mg" x1="12" y1="80" x2="488" y2="80"
               stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1"
               stroke-dasharray="4 5" visibility="hidden"/>
+        <text id="label50mg" x="14" y="0"
+              fill="#484f58" font-size="9" text-anchor="start"
+              visibility="hidden">50mg</text>
         <line id="drop50Line" x1="0" y1="0" x2="0" y2="0"
               stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1"
               stroke-dasharray="4 5" visibility="hidden"/>
@@ -563,7 +566,8 @@ function updateGraph() {
   const centerLabel = document.getElementById('centerTimeLabel');
   if (centerLabel) centerLabel.textContent = hoursToHHMM(nowH);
 
-  const line50 = document.getElementById('line50mg');
+  const line50     = document.getElementById('line50mg');
+  const label50mg  = document.getElementById('label50mg');
   if (line50) {
     const y50 = toY(50);
     if (y50 >= PAD_T && y50 <= PAD_T + gH) {
@@ -572,8 +576,13 @@ function updateGraph() {
       line50.setAttribute('x1', PAD_L);
       line50.setAttribute('x2', PAD_L + gW);
       line50.setAttribute('visibility', 'visible');
+      if (label50mg) {
+        label50mg.setAttribute('y', (y50 - 2).toFixed(1));
+        label50mg.setAttribute('visibility', 'visible');
+      }
     } else {
       line50.setAttribute('visibility', 'hidden');
+      if (label50mg) label50mg.setAttribute('visibility', 'hidden');
     }
   }
 
