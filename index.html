@@ -6,6 +6,13 @@
   <meta name="google-site-verification" content="5QwFWb4EKUO-skKGpkIX3AEDFZ_8oZ8GhYos8KTK3Sc" />
   <title>カフェイン残量トラッカー</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <meta name="theme-color" content="#0d1117">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="カフェイン">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -796,6 +803,10 @@ loadFromStorage();
 renderLog();
 updateGraph();
 setInterval(() => { try { updateGraph(); } catch (e) { console.error('updateGraph failed:', e); } }, 60_000);
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
 </script>
 </body>
 </html>
