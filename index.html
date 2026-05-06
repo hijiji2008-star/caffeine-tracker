@@ -585,8 +585,11 @@ function updateGraph() {
   const NS_SVG = 'http://www.w3.org/2000/svg';
   const currentMg = caffeineAtContinuous(nowH);
   const yLabels = [
-    { val: Math.round(currentMg), y: toY(currentMg) - 2, fill: '#e6edf3' },
-    { val: 50,                    y: toY(50) - 2,         fill: '#f59e0b' },
+    { val: maxVal,                   y: toY(maxVal) + 9,        fill: '#484f58' },
+    { val: Math.round(maxVal / 2),   y: toY(maxVal / 2) + 4,   fill: '#484f58' },
+    { val: 0,                        y: toY(0) - 2,             fill: '#484f58' },
+    { val: Math.round(currentMg),    y: toY(currentMg) - 2,     fill: '#e6edf3' },
+    { val: 50,                       y: toY(50) - 2,            fill: '#f59e0b' },
   ];
   yLabels.forEach(({ val, y, fill }) => {
     const yC = Math.max(PAD_T + 8, Math.min(PAD_T + gH - 2, y));
