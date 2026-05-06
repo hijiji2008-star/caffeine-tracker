@@ -251,7 +251,7 @@
         <g id="entryMarkers"></g>
         <text id="label50mg" x="6" y="0"
               fill="#484f58" font-size="9" text-anchor="start"
-              visibility="hidden">50mg</text>
+              visibility="hidden" style="display:none">50mg</text>
         <line id="drop50Line" x1="0" y1="0" x2="0" y2="0"
               stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1"
               stroke-dasharray="4 5" visibility="hidden"/>
@@ -261,6 +261,7 @@
         <line id="nowLine" x1="250" y1="10" x2="250" y2="152"
               stroke="#e6edf3" stroke-opacity="0.22" stroke-width="1"/>
         <g id="xLabelGroup"></g>
+        <g id="yOverlayGroup"></g>
       </svg>
 
     </div>
@@ -591,12 +592,25 @@ function updateGraph() {
     { val: Math.round(maxVal/2), y: toY(maxVal/2) + 4   },
     { val: 0,                    y: toY(0) - 2          },
   ].filter(({ y }) => Math.abs(y - yCurrent) > 12 && Math.abs(y - y50) > 12);
-  const yLabels = [
-    ...grayLabels.map(l => ({ ...l, fill: '#484f58' })),
+  const overlayGroup = document.getElementById('yOverlayGroup');
+  while (overlayGroup.firstChild) overlayGroup.removeChild(overlayGroup.firstChild);
+
+  grayLabels.forEach(({ val, y }) => {
+    const yC = Math.max(PAD_T + 8, Math.min(PAD_T + gH - 2, y));
+    const txt = document.createElementNS(NS_SVG, 'text');
+    txt.setAttribute('x', '6');
+    txt.setAttribute('y', yC.toFixed(1));
+    txt.setAttribute('fill', '#484f58');
+    txt.setAttribute('font-size', '9');
+    txt.setAttribute('text-anchor', 'start');
+    txt.textContent = Math.round(val) + 'mg';
+    yLabelGroup.appendChild(txt);
+  });
+
+  [
     { val: Math.round(currentMg), y: yCurrent, fill: '#e6edf3', bold: false },
     { val: 50,                    y: y50,       fill: '#f59e0b', bold: true  },
-  ];
-  yLabels.forEach(({ val, y, fill, bold }) => {
+  ].forEach(({ val, y, fill, bold }) => {
     const yC = Math.max(PAD_T + 8, Math.min(PAD_T + gH - 2, y));
     const txt = document.createElementNS(NS_SVG, 'text');
     txt.setAttribute('x', '6');
@@ -605,8 +619,8 @@ function updateGraph() {
     txt.setAttribute('font-size', '9');
     txt.setAttribute('font-weight', bold ? '600' : 'normal');
     txt.setAttribute('text-anchor', 'start');
-    txt.textContent = Math.round(val) + 'mg';
-    yLabelGroup.appendChild(txt);
+    txt.textContent = val + 'mg';
+    overlayGroup.appendChild(txt);
   });
 
   document.getElementById('badgeCurrent').textContent = Math.round(caffeineAtContinuous(nowH)) + 'mg';
