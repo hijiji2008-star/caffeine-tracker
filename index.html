@@ -584,12 +584,17 @@ function updateGraph() {
   while (yLabelGroup.firstChild) yLabelGroup.removeChild(yLabelGroup.firstChild);
   const NS_SVG = 'http://www.w3.org/2000/svg';
   const currentMg = caffeineAtContinuous(nowH);
+  const yCurrent = toY(currentMg) - 2;
+  const y50      = toY(50) - 2;
+  const grayLabels = [
+    { val: maxVal,               y: toY(maxVal) + 9     },
+    { val: Math.round(maxVal/2), y: toY(maxVal/2) + 4   },
+    { val: 0,                    y: toY(0) - 2          },
+  ].filter(({ y }) => Math.abs(y - yCurrent) > 12 && Math.abs(y - y50) > 12);
   const yLabels = [
-    { val: maxVal,                   y: toY(maxVal) + 9,        fill: '#484f58' },
-    { val: Math.round(maxVal / 2),   y: toY(maxVal / 2) + 4,   fill: '#484f58' },
-    { val: 0,                        y: toY(0) - 2,             fill: '#484f58' },
-    { val: Math.round(currentMg),    y: toY(currentMg) - 2,     fill: '#e6edf3' },
-    { val: 50,                       y: toY(50) - 2,            fill: '#f59e0b' },
+    ...grayLabels.map(l => ({ ...l, fill: '#484f58' })),
+    { val: Math.round(currentMg), y: yCurrent, fill: '#e6edf3' },
+    { val: 50,                    y: y50,       fill: '#f59e0b' },
   ];
   yLabels.forEach(({ val, y, fill }) => {
     const yC = Math.max(PAD_T + 8, Math.min(PAD_T + gH - 2, y));
