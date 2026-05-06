@@ -416,7 +416,12 @@ function buildSelect() {
     });
     sel.appendChild(grp);
   });
-  if (currentVal) sel.value = currentVal;
+  if (currentVal) {
+    sel.value = currentVal;
+  } else {
+    const lastDrink = localStorage.getItem('caffeine_lastDrink');
+    if (lastDrink) sel.value = lastDrink;
+  }
 }
 
 function applyLang(lang) {
@@ -716,6 +721,7 @@ function addEntry() {
   const timeVal = document.getElementById('hourPick').value + ':' + document.getElementById('minPick').value;
   const drink = DRINKS.find(d => d.id === sel.value);
   if (!drink) return;
+  localStorage.setItem('caffeine_lastDrink', drink.id);
   entries.push({ id: nextId++, drink: drink.id, mg: drink.mg, time: timeVal });
   entries.sort((a, b) => timeToHours(a.time) - timeToHours(b.time));
   renderLog();
