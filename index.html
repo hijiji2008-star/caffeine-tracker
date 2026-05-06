@@ -831,6 +831,7 @@ renderLog();
 updateGraph();
 setInterval(() => {
   try { updateGraph(); } catch (e) { console.error('updateGraph failed:', e); }
+  renderLog();
   syncTimePick();
 }, 60_000);
 
