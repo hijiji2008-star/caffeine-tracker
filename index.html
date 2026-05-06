@@ -441,6 +441,18 @@ document.getElementById('langBtn').addEventListener('click', () => {
   applyLang(currentLang);
 });
 
+let timePickUserEdited = false;
+
+function syncTimePick() {
+  if (timePickUserEdited) return;
+  const hourSel = document.getElementById('hourPick');
+  const minSel  = document.getElementById('minPick');
+  const now = new Date();
+  const rounded = Math.round((now.getHours() * 60 + now.getMinutes()) / 5) * 5;
+  hourSel.value = String(Math.floor(rounded / 60) % 24).padStart(2,'0');
+  minSel.value  = String(rounded % 60).padStart(2,'0');
+}
+
 (function buildTimePick() {
   const hourSel = document.getElementById('hourPick');
   const minSel  = document.getElementById('minPick');
@@ -454,10 +466,9 @@ document.getElementById('langBtn').addEventListener('click', () => {
     opt.value = opt.textContent = String(m).padStart(2,'0');
     minSel.appendChild(opt);
   }
-  const now = new Date();
-  const rounded = Math.round((now.getHours() * 60 + now.getMinutes()) / 5) * 5;
-  hourSel.value = String(Math.floor(rounded / 60) % 24).padStart(2,'0');
-  minSel.value  = String(rounded % 60).padStart(2,'0');
+  syncTimePick();
+  hourSel.addEventListener('change', () => { timePickUserEdited = true; });
+  minSel.addEventListener('change',  () => { timePickUserEdited = true; });
 })();
 
 let entries = [];
@@ -710,6 +721,8 @@ function addEntry() {
   renderLog();
   updateGraph();
   saveToStorage();
+  timePickUserEdited = false;
+  syncTimePick();
 }
 
 function deleteEntry(id) {
@@ -801,7 +814,10 @@ buildSelect();
 loadFromStorage();
 renderLog();
 updateGraph();
-setInterval(() => { try { updateGraph(); } catch (e) { console.error('updateGraph failed:', e); } }, 60_000);
+setInterval(() => {
+  try { updateGraph(); } catch (e) { console.error('updateGraph failed:', e); }
+  syncTimePick();
+}, 60_000);
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
