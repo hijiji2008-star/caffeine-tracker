@@ -593,16 +593,17 @@ function updateGraph() {
   ].filter(({ y }) => Math.abs(y - yCurrent) > 12 && Math.abs(y - y50) > 12);
   const yLabels = [
     ...grayLabels.map(l => ({ ...l, fill: '#484f58' })),
-    { val: Math.round(currentMg), y: yCurrent, fill: '#e6edf3' },
-    { val: 50,                    y: y50,       fill: '#f59e0b' },
+    { val: Math.round(currentMg), y: yCurrent, fill: '#e6edf3', bold: false },
+    { val: 50,                    y: y50,       fill: '#f59e0b', bold: true  },
   ];
-  yLabels.forEach(({ val, y, fill }) => {
+  yLabels.forEach(({ val, y, fill, bold }) => {
     const yC = Math.max(PAD_T + 8, Math.min(PAD_T + gH - 2, y));
     const txt = document.createElementNS(NS_SVG, 'text');
     txt.setAttribute('x', '6');
     txt.setAttribute('y', yC.toFixed(1));
     txt.setAttribute('fill', fill);
     txt.setAttribute('font-size', '9');
+    txt.setAttribute('font-weight', bold ? '600' : 'normal');
     txt.setAttribute('text-anchor', 'start');
     txt.textContent = Math.round(val) + 'mg';
     yLabelGroup.appendChild(txt);
