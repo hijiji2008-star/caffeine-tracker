@@ -198,20 +198,7 @@
 
     .x-label { font-size: 9px; color: #484f58; }
 
-    #centerTimeLabel {
-      position: absolute;
-      left: 50%;
-      bottom: 6px;
-      transform: translateX(-50%);
-      font-size: 9px;
-      letter-spacing: 0px;
-      color: rgba(230,237,243,0.95);
-      background: rgba(13,17,23,0.65);
-      border: 1px solid rgba(230,237,243,0.4);
-      padding: 2px 5px;
-      border-radius: 999px;
-      pointer-events: none;
-    }
+
 
     .badges {
       display: flex;
@@ -275,7 +262,7 @@
               stroke="#e6edf3" stroke-opacity="0.22" stroke-width="1"/>
         <g id="xLabelGroup"></g>
       </svg>
-      <div id="centerTimeLabel">--:--</div>
+
     </div>
     <div class="badges">
       <div class="badge" id="badge50mg">
@@ -556,7 +543,7 @@ function renderWindowXLabels(nowH, PAD_L, gW) {
     const txt = document.createElementNS(NS, 'text');
     txt.setAttribute('x', x.toFixed(1));
     txt.setAttribute('y', X_LABEL_Y);
-    txt.setAttribute('fill', '#484f58');
+    txt.setAttribute('fill', t === nowH ? '#e6edf3' : '#484f58');
     txt.setAttribute('font-size', '9');
     txt.setAttribute('text-anchor', anchor);
     txt.textContent = hoursToHHMM(t);
@@ -621,9 +608,6 @@ function updateGraph() {
     nowLine.setAttribute('y1', PAD_T);
     nowLine.setAttribute('y2', PAD_T + gH);
   }
-
-  const centerLabel = document.getElementById('centerTimeLabel');
-  if (centerLabel) centerLabel.textContent = hoursToHHMM(nowH);
 
   const line50     = document.getElementById('line50mg');
   const label50mg  = document.getElementById('label50mg');
