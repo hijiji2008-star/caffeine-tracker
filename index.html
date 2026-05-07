@@ -252,15 +252,15 @@
         <text id="label50mg" x="6" y="0"
               fill="#484f58" font-size="9" text-anchor="start"
               visibility="hidden" style="display:none">50mg</text>
+        <line id="nowLine" x1="250" y1="10" x2="250" y2="152"
+              stroke="#e6edf3" stroke-opacity="0.22" stroke-width="1"/>
+        <g id="xLabelGroup"></g>
         <line id="drop50Line" x1="0" y1="0" x2="0" y2="0"
               stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1"
               stroke-dasharray="4 5" visibility="hidden"/>
         <text id="drop50Text" x="0" y="0"
               fill="#f59e0b" font-size="9" text-anchor="middle"
               visibility="hidden"></text>
-        <line id="nowLine" x1="250" y1="10" x2="250" y2="152"
-              stroke="#e6edf3" stroke-opacity="0.22" stroke-width="1"/>
-        <g id="xLabelGroup"></g>
         <g id="yOverlayGroup"></g>
       </svg>
 
@@ -441,7 +441,7 @@ function syncTimePick() {
   const hourSel = document.getElementById('hourPick');
   const minSel  = document.getElementById('minPick');
   const now = new Date();
-  const rounded = Math.round((now.getHours() * 60 + now.getMinutes()) / 5) * 5;
+  const rounded = Math.floor((now.getHours() * 60 + now.getMinutes()) / 5) * 5;
   hourSel.value = String(Math.floor(rounded / 60) % 24).padStart(2,'0');
   minSel.value  = String(rounded % 60).padStart(2,'0');
 }
